@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block page_heading %}Product Catalog{% endblock %}
+
+{% block content %}
+<div class="card">
+  <!-- Search & Filter Controls -->
+  <div class="card-header">
+    <form method="get" action="{% url 'inventory:product_list' %}" class="filter-bar" style="width: 100%;">
+      <div class="filter-group">
+        <input 
+          type="text" 
+          name="q" 
+          value="{{ query }}" 
+          placeholder="Search name, SKU, or barcode..." 
+          class="search-input"
+        >
+        
+        <select name="category" class="select-input">
+          <option value="">All Categories</option>
+          {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+              {{ cat.name }}
+            </option>
+          {% endfor %}
+        </select>
+
+        <select name="status" class="select-input">
+          <option value="">All Stock Statuses</option>
+          <option value="in_stock" {% if selected_status == "in_stock" %}selected{% endif %}>In Stock</option>
+          <option value="low_stock" {% if selected_status == "low_stock" %}selected{% endif %}>Low Stock</option>
+          <option value="out_of_stock" {% if selected_status == "out_of_stock" %}selected{% endif %}>Out of Stock</option>
+        </select>
+
+        <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+        {% if query or selected_category or selected_status %}
+          <a href="{% url 'inventory:product_list' %}" class="btn btn-secondary btn-sm" style="color: var(--danger);">Reset</a>
+        {% endif %}
+      </div>
+
+      <div style="font-size: 13px; color: var(--text-muted); font-weight: 500;">
+        Showing {{ total_results }} item{{ total_results|pluralize }}
+      </div>
+    </form>
+  </div>
+
+  <!-- Table Body -->
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>SKU / Barcode</th>
+          <th>Category</th>
+          <th>Location</th>
+          <th>Quantity</th>
+          <th>Unit Price</th>
+          <th>Valuation</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for prod in products %}
+        <tr>
+          <td>
+            <strong>{{ prod.name }}</strong>
+            {% if prod.supplier %}
+              <div style="font-size: 11px; color: var(--text-muted);">By: {{ prod.supplier.name }}</div>
+            {% endif %}
+          </td>
+          <td>
+            <span style="font-family: monospace; font-size: 12px; font-weight: 600; color: var(--primary);">
+              {{ prod.sku }}
+            </span>
+            {% if prod.barcode %}
+              <div style="font-size: 11px; color: var(--text-muted);">EAN: {{ prod.barcode }}</div>
+            {% endif %}
+          </td>
+          <td>{{ prod.category.name }}</td>
+          <td>{{ prod.warehouse_location|default:"Unassigned" }}</td>
+          <td>
+            <strong>{{ prod.quantity_on_hand }}</strong> {{ prod.unit }}
+            <div style="font-size: 11px; color: var(--text-muted);">Min: {{ prod.reorder_threshold }}</div>
+          </td>
+          <td>${{ prod.unit_price }}</td>
+          <td>${{ prod.total_value|floatformat:2 }}</td>
+          <td>
+            {% if prod.is_out_of_stock %}
+              <span class="badge badge-out-of-stock">Out of Stock</span>
+            {% elif prod.is_low_stock %}
+              <span class="badge badge-low-stock">Low Stock</span>
+            {% else %}
+              <span class="badge badge-in-stock">In Stock</span>
+            {% endif %}
+          </td>
+          <td>
+            <div style="display: flex; gap: 6px;">
+              <a href="{% url 'inventory:product_detail' prod.pk %}" class="btn btn-secondary btn-sm">Inspect</a>
+              <a href="{% url 'inventory:product_update' prod.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" style="text-align: center; padding: 40px; color: var(--text-muted);">
+            No matching products found. Try adjusting your filters.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

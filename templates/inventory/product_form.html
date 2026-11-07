@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block page_heading %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; width: 100%;">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">{{ form_title }}</h2>
+        <p class="card-subtitle">Fill in the product specifications, inventory thresholds, and storage assignment.</p>
+      </div>
+      <a href="{% url 'inventory:product_list' %}" class="btn btn-secondary btn-sm">Cancel</a>
+    </div>
+
+    <form method="post" class="card-body">
+      {% csrf_token %}
+
+      {% if form.errors %}
+        <div style="background: var(--danger-light); color: var(--danger-text); padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 20px;">
+          <strong>Please correct the errors below:</strong>
+          <ul style="margin-left: 20px; margin-top: 6px;">
+            {% for field, errors in form.errors.items %}
+              {% for error in errors %}
+                <li>{{ field|title }}: {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <div class="form-grid">
+        <!-- Product Name -->
+        <div class="form-group full-width">
+          <label class="form-label" for="{{ form.name.id_for_label }}">Product Name *</label>
+          {{ form.name }}
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.category.id_for_label }}">Category *</label>
+          {{ form.category }}
+        </div>
+
+        <!-- Unit -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.unit.id_for_label }}">Unit of Measurement *</label>
+          {{ form.unit }}
+        </div>
+
+        <!-- Supplier -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.supplier.id_for_label }}">Supplier</label>
+          {{ form.supplier }}
+        </div>
+
+        <!-- Location -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.warehouse_location.id_for_label }}">Warehouse Storage Location</label>
+          {{ form.warehouse_location }}
+        </div>
+
+        <!-- Cost Price -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.cost_price.id_for_label }}">Cost Price ($)</label>
+          {{ form.cost_price }}
+          <span class="form-help">Cost to purchase or manufacture</span>
+        </div>
+
+        <!-- Selling/Unit Price -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.unit_price.id_for_label }}">Unit Price ($) *</label>
+          {{ form.unit_price }}
+          <span class="form-help">Selling or valuation unit price</span>
+        </div>
+
+        <!-- Initial Stock -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.quantity_on_hand.id_for_label }}">Initial Quantity on Hand</label>
+          {{ form.quantity_on_hand }}
+          <span class="form-help">Current physical units in stock</span>
+        </div>
+
+        <!-- Reorder Threshold -->
+        <div class="form-group">
+          <label class="form-label" for="{{ form.reorder_threshold.id_for_label }}">Reorder Safety Threshold</label>
+          {{ form.reorder_threshold }}
+          <span class="form-help">Trigger low-stock alert when stock ≤ this number</span>
+        </div>
+
+        <!-- Barcode -->
+        <div class="form-group full-width">
+          <label class="form-label" for="{{ form.barcode.id_for_label }}">Barcode / EAN</label>
+          {{ form.barcode }}
+        </div>
+
+        <!-- Description -->
+        <div class="form-group full-width">
+          <label class="form-label" for="{{ form.description.id_for_label }}">Specifications & Notes</label>
+          {{ form.description }}
+        </div>
+
+        <!-- Active Checkbox -->
+        <div class="form-group full-width" style="flex-direction: row; align-items: center; gap: 10px;">
+          {{ form.is_active }}
+          <label class="form-label" for="{{ form.is_active.id_for_label }}" style="margin: 0; cursor: pointer;">
+            Active Product (visible in catalog and stock operations)
+          </label>
+        </div>
+      </div>
+
+      <div style="margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px;">
+        <a href="{% url 'inventory:product_list' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

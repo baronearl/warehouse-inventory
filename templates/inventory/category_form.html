@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block page_heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto; width: 100%;">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Edit Category</h2>
+        <p class="card-subtitle">Update category details for {{ category.name }}</p>
+      </div>
+      <a href="{% url 'inventory:category_list' %}" class="btn btn-secondary btn-sm">Cancel</a>
+    </div>
+
+    <form method="post" class="card-body">
+      {% csrf_token %}
+
+      {% if form.errors %}
+        <div style="background: var(--danger-light); color: var(--danger-text); padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 13px;">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              <div>{{ field|title }}: {{ error }}</div>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label" for="{{ form.name.id_for_label }}">Category Name *</label>
+        {{ form.name }}
+      </div>
+
+      <div class="form-group" style="margin-bottom: 24px;">
+        <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
+        {{ form.description }}
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+        <a href="{% url 'inventory:category_list' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Update Category</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

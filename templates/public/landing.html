@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title }}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body style="background: #ffffff;">
+
+  <!-- Public Navigation Bar -->
+  <header class="landing-navbar">
+    <div class="landing-brand">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+      </div>
+      <div>
+        <span class="brand-title" style="color: var(--text-main); font-size: 18px;">StockFlow</span>
+        <span class="brand-subtitle" style="color: var(--text-muted); font-size: 11px;">Warehouse & Forecasting</span>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 16px;">
+      {% if user.is_authenticated %}
+        <span style="font-size: 13px; color: var(--text-muted);">
+          Logged in as <strong>{{ user.username }}</strong>
+        </span>
+        <a href="{% url 'inventory:dashboard' %}" class="btn btn-primary">Go to Dashboard →</a>
+        <a href="{% url 'inventory:logout' %}" class="btn btn-secondary btn-sm">Sign Out</a>
+      {% else %}
+        <a href="{% url 'inventory:login' %}" class="btn btn-secondary">Supervisor Sign In</a>
+        <a href="{% url 'inventory:login' %}" class="btn btn-primary">Access Dashboard →</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main>
+    <section class="landing-hero">
+      <div class="hero-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Student Project & Supervisor Demonstration
+      </div>
+
+      <h1 class="hero-headline">
+        Warehouse Inventory Management<br>
+        <span style="color: var(--primary);">with Demand Forecasting</span>
+      </h1>
+
+      <p class="hero-subheadline">
+        An end-to-end intelligent inventory system designed to monitor warehouse operations,
+        track physical stock across storage locations, and predict replenishment needs using
+        predictive time-series modeling.
+      </p>
+
+      <div class="hero-actions">
+        {% if user.is_authenticated %}
+          <a href="{% url 'inventory:dashboard' %}" class="btn btn-primary btn-lg">
+            Launch Protected Dashboard →
+          </a>
+        {% else %}
+          <a href="{% url 'inventory:login' %}" class="btn btn-primary btn-lg">
+            Sign In to Access Dashboard →
+          </a>
+        {% endif %}
+        <a href="#features" class="btn btn-secondary btn-lg">Explore Architecture</a>
+      </div>
+
+      <!-- Quick Supervisor Access Callout -->
+      <div class="credentials-callout">
+        <div style="text-align: left;">
+          <strong style="font-size: 14px; color: var(--text-main); display: block; margin-bottom: 4px;">
+            🎓 Project Supervisor & Evaluation Access
+          </strong>
+          <span style="font-size: 13px; color: var(--text-muted);">
+            The operational dashboard is protected behind role-based authentication. Use these demo credentials to test:
+          </span>
+          <div style="margin-top: 8px; font-family: monospace; font-size: 13px; color: var(--text-main);">
+            Username: <strong style="color: var(--primary);">supervisor</strong> | Password: <strong style="color: var(--primary);">supervisor123</strong>
+          </div>
+        </div>
+        <div>
+          <a href="{% url 'inventory:login' %}" class="btn btn-primary btn-sm">Instant Sign In</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Capabilities Grid -->
+    <section id="features" class="features-section">
+      <div class="section-header">
+        <h2 class="section-title">Core System Capabilities</h2>
+        <p class="section-subtitle">Comprehensive warehouse stock management and intelligent replenishment</p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          </div>
+          <h3 class="feature-heading">Warehouse Stock Catalog</h3>
+          <p class="feature-text">
+            Relational inventory mapping covering categories, vendors, storage locations, unit pricing, and automated SKU barcode generation.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-box">
+          <div class="feature-icon-wrapper" style="background: var(--warning-light); color: var(--warning);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+          </div>
+          <h3 class="feature-heading">Stock Operations & Audit</h3>
+          <p class="feature-text">
+            Stock intake (receiving), dispatch (sales), internal transfers, and adjustment tracking with an immutable audit log.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-box">
+          <div class="feature-icon-wrapper" style="background: #eff6ff; color: #3b82f6;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          </div>
+          <h3 class="feature-heading">Demand Forecasting Engine</h3>
+          <p class="feature-text">
+            Machine learning and time-series demand models (Moving Averages, Exponential Smoothing, Prophet) predicting upcoming reorder requirements.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-box">
+          <div class="feature-icon-wrapper" style="background: var(--danger-light); color: var(--danger);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          </div>
+          <h3 class="feature-heading">Real-Time Stockout Prevention</h3>
+          <p class="feature-text">
+            Dynamic safety-stock calculation and automated purchase recommendations based on lead times and forecasted consumption.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <p>Warehouse Inventory Management with Demand Forecasting — Student Academic Project &copy; 2026</p>
+    <p style="margin-top: 6px; font-size: 12px; color: var(--text-light);">
+      Built with Django, PostgreSQL, and clean custom Vanilla CSS.
+    </p>
+  </footer>
+
+</body>
+</html>

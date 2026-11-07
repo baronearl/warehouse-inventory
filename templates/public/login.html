@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title }}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div style="display: flex; justify-content: center;">
+          <div class="brand-icon" style="width: 44px; height: 44px; font-size: 22px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+        </div>
+        <h1 class="auth-title">Warehouse Portal Sign In</h1>
+        <p class="auth-subtitle">Sign in to access the protected inventory dashboard</p>
+      </div>
+
+      {% if messages %}
+        <div style="margin-bottom: 20px;">
+          {% for message in messages %}
+            <div style="background: {% if message.tags == 'error' %}var(--danger-light){% else %}var(--primary-light){% endif %}; color: {% if message.tags == 'error' %}var(--danger-text){% else %}var(--primary-text){% endif %}; padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'inventory:login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">
+        {% csrf_token %}
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label" for="id_username">Username</label>
+          <input 
+            type="text" 
+            name="username" 
+            id="id_username" 
+            class="form-control" 
+            placeholder="e.g. supervisor or admin" 
+            required 
+            autofocus
+          >
+        </div>
+
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label class="form-label" for="id_password">Password</label>
+          <input 
+            type="password" 
+            name="password" 
+            id="id_password" 
+            class="form-control" 
+            placeholder="••••••••" 
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px;">
+          Sign In to Dashboard
+        </button>
+      </form>
+
+      <!-- 1-Click Demo Fill for Supervisor Check-in -->
+      <div class="demo-credentials-box">
+        <strong>Demo Quick-Fill Credentials:</strong>
+        <p style="color: var(--text-muted); margin-top: 4px;">Click an account below to quickly populate credentials for review:</p>
+        <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+          <button 
+            type="button" 
+            class="demo-account-tag" 
+            onclick="fillAuth('supervisor', 'supervisor123')"
+          >
+            🎓 Supervisor (supervisor / supervisor123)
+          </button>
+          <button 
+            type="button" 
+            class="demo-account-tag" 
+            onclick="fillAuth('admin', 'admin123')"
+          >
+            ⚙️ Administrator (admin / admin123)
+          </button>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="{% url 'inventory:landing' %}" style="font-size: 13px; color: var(--text-muted); text-decoration: underline;">
+          ← Return to Public Homepage
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function fillAuth(username, password) {
+      document.getElementById('id_username').value = username;
+      document.getElementById('id_password').value = password;
+    }
+  </script>
+</body>
+</html>

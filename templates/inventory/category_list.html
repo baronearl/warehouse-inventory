@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block page_heading %}Product Categories{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; align-items: start;">
+  <!-- Left Side: Add New Category Form UI -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title" style="display: flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Add New Category
+        </h2>
+        <p class="card-subtitle">Create a new classification group for products</p>
+      </div>
+    </div>
+
+    <form method="post" action="{% url 'inventory:category_list' %}" class="card-body">
+      {% csrf_token %}
+
+      {% if form.errors %}
+        <div style="background: var(--danger-light); color: var(--danger-text); padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 13px;">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              <div>{{ field|title }}: {{ error }}</div>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label" for="{{ form.name.id_for_label }}">Category Name *</label>
+        {{ form.name }}
+        <span class="form-help">Unique name (e.g. Electrical Tools, Raw Plastics)</span>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
+        {{ form.description }}
+        <span class="form-help">Optional details regarding storage conditions or types</span>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Save Category
+      </button>
+    </form>
+  </div>
+
+  <!-- Right Side: Existing Categories Table -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Existing Categories</h2>
+        <p class="card-subtitle">{{ categories.count }} classification group{{ categories.count|pluralize }} defined in the warehouse</p>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Category Name</th>
+            <th>Description</th>
+            <th>Products Count</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cat in categories %}
+          <tr>
+            <td>
+              <strong>{{ cat.name }}</strong>
+              <div style="font-size: 11px; font-family: monospace; color: var(--text-muted);">{{ cat.slug }}</div>
+            </td>
+            <td style="color: var(--text-muted); max-width: 300px; font-size: 13px;">
+              {{ cat.description|default:"—" }}
+            </td>
+            <td>
+              <a href="{% url 'inventory:product_list' %}?category={{ cat.id }}" class="badge badge-neutral" style="text-decoration: underline;" title="View all products under this category">
+                {{ cat.products.count }} product{{ cat.products.count|pluralize }}
+              </a>
+            </td>
+            <td style="font-size: 12px; color: var(--text-muted);">{{ cat.created_at|date:"M d, Y" }}</td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                <a href="{% url 'inventory:category_update' cat.pk %}" class="btn btn-secondary btn-sm" title="Edit Category Details">
+                  Edit
+                </a>
+                <a href="{% url 'inventory:category_delete' cat.pk %}" class="btn btn-secondary btn-sm" style="color: var(--danger);" title="Delete Category">
+                  Delete
+                </a>
+                <a href="{% url 'inventory:product_list' %}?category={{ cat.id }}" class="btn btn-secondary btn-sm" title="View Products">
+                  View
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 32px; color: var(--text-muted);">
+              No categories defined yet. Use the form on the left to create your first category.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

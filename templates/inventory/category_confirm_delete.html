@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block page_heading %}Delete Category{% endblock %}
+
+{% block content %}
+<div style="max-width: 560px; margin: 0 auto; width: 100%;">
+  <div class="card" style="border-top: 4px solid var(--danger);">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title" style="color: var(--danger-text); display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          Confirm Category Deletion
+        </h2>
+        <p class="card-subtitle">Are you sure you want to delete <strong>{{ category.name }}</strong>?</p>
+      </div>
+    </div>
+
+    <div class="card-body">
+      {% if product_count > 0 %}
+        <div style="background: var(--warning-light); color: var(--warning-text); padding: 16px; border-radius: var(--radius-md); font-size: 13px; line-height: 1.6; margin-bottom: 20px;">
+          <strong>⚠️ Cannot Delete Category with Active Products</strong>
+          <p style="margin-top: 6px;">
+            This category is currently linked to <strong>{{ product_count }} product{{ product_count|pluralize }}</strong>.
+            Database integrity rules protect these warehouse items from being orphaned.
+          </p>
+          <p style="margin-top: 8px;">
+            To delete this category, first reassign or delete the associated products in the catalog.
+          </p>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+          <a href="{% url 'inventory:category_list' %}" class="btn btn-secondary">← Back to Categories</a>
+          <a href="{% url 'inventory:product_list' %}?category={{ category.id }}" class="btn btn-primary">
+            View Linked Products ({{ product_count }})
+          </a>
+        </div>
+      {% else %}
+        <p style="font-size: 14px; color: var(--text-main); line-height: 1.6; margin-bottom: 20px;">
+          There are currently no products linked to <strong>{{ category.name }}</strong>. Deleting this category will permanently remove it from the system.
+        </p>
+
+        <form method="post" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+          {% csrf_token %}
+          <a href="{% url 'inventory:category_list' %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-sm" style="background: var(--danger); color: #fff; padding: 8px 18px; font-weight: 600;">
+            Yes, Delete Category
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

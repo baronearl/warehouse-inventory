@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block page_heading %}Product Details{% endblock %}
+
+{% block content %}
+<div style="display: flex; gap: 12px; margin-bottom: 12px;">
+  <a href="{% url 'inventory:product_list' %}" class="btn btn-secondary btn-sm">← Back to Catalog</a>
+  <a href="{% url 'inventory:product_update' product.pk %}" class="btn btn-primary btn-sm">Edit Product</a>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+  <!-- Left Column: Primary Specifications -->
+  <div style="display: flex; flex-direction: column; gap: 24px;">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <span style="font-family: monospace; font-size: 13px; font-weight: 700; color: var(--primary);">{{ product.sku }}</span>
+          <h2 class="card-title" style="font-size: 22px; margin-top: 4px;">{{ product.name }}</h2>
+          <span class="badge-tag">{{ product.category.name }}</span>
+        </div>
+        <div>
+          {% if product.is_out_of_stock %}
+            <span class="badge badge-out-of-stock" style="font-size: 13px; padding: 6px 14px;">Out of Stock</span>
+          {% elif product.is_low_stock %}
+            <span class="badge badge-low-stock" style="font-size: 13px; padding: 6px 14px;">Low Stock (Reorder Needed)</span>
+          {% else %}
+            <span class="badge badge-in-stock" style="font-size: 13px; padding: 6px 14px;">In Stock (Healthy)</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card-body">
+        <h3 style="font-size: 13px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Description & Specs</h3>
+        <p style="color: var(--text-main); font-size: 14px; line-height: 1.6;">
+          {{ product.description|default:"No specifications or description provided for this product." }}
+        </p>
+
+        <div style="margin-top: 24px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; border-top: 1px solid var(--border-color); padding-top: 18px;">
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Barcode / EAN</span>
+            <div style="font-size: 14px; font-family: monospace; font-weight: 600;">{{ product.barcode|default:"Not Barcoded" }}</div>
+          </div>
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Unit Measurement</span>
+            <div style="font-size: 14px; font-weight: 600;">{{ product.get_unit_display }}</div>
+          </div>
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Warehouse Location</span>
+            <div style="font-size: 14px; font-weight: 600;">{{ product.warehouse_location|default:"Not Assigned" }}</div>
+          </div>
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Registered Supplier</span>
+            <div style="font-size: 14px; font-weight: 600;">{{ product.supplier.name|default:"Direct / Internal" }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Stock Health & Financial Valuation -->
+  <div style="display: flex; flex-direction: column; gap: 24px;">
+    <!-- Stock Health -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Stock Health & Thresholds</h3>
+      </div>
+      <div class="card-body" style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: var(--border-light); padding: 16px; border-radius: var(--radius-md); text-align: center;">
+          <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Physical Stock on Hand</span>
+          <div style="font-size: 36px; font-weight: 800; color: var(--text-main);">
+            {{ product.quantity_on_hand }}
+            <span style="font-size: 16px; font-weight: 500; color: var(--text-muted);">{{ product.unit }}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+          <span style="color: var(--text-muted);">Reorder Threshold:</span>
+          <strong>{{ product.reorder_threshold }} {{ product.unit }}</strong>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+          <span style="color: var(--text-muted);">Stock Safety Status:</span>
+          {% if product.is_out_of_stock %}
+            <strong style="color: var(--danger);">Depleted (0 units)</strong>
+          {% elif product.is_low_stock %}
+            <strong style="color: var(--warning);">Below Minimum Safety Level</strong>
+          {% else %}
+            <strong style="color: var(--success);">Satisfactory Buffer</strong>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Financial Metrics -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Pricing & Financials</h3>
+      </div>
+      <div class="card-body" style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; justify-content: space-between; font-size: 13px;">
+          <span style="color: var(--text-muted);">Cost Price:</span>
+          <strong>${{ product.cost_price }}</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px;">
+          <span style="color: var(--text-muted);">Selling Price:</span>
+          <strong>${{ product.unit_price }}</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+          <span style="color: var(--text-muted);">Total Inventory Value:</span>
+          <strong style="color: var(--primary); font-size: 16px;">${{ product.total_value|floatformat:2 }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
